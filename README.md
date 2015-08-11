@@ -276,6 +276,6 @@ The `Rosewood.Model` instance the view represents (optional).
 
 A proxy event emitted whenever `view.model` emits a `change` event. The callback parameter is the same as `model.on('change')`
 
-#### view.on('model:change:&lt;attribute&gt;')
+#### view.on('model:change:&lt;attribute&gt;', function(changes){ ... })
 
 A proxy event emitted when `view.model` emits a `change:<attribute>` event. The callback parameter is the same as `model.on('change:<attribute>')`
