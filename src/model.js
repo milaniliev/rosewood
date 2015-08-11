@@ -20,8 +20,10 @@ class Model extends EventEmitter {
     Object.defineProperty(this, attribute, {
       set: (new_value) => {
         changes = {}
-        changes[attribute] = {new: new_value, old: this.attributes[attribute]}
+        attribute_changes = {new: new_value, old: this.attributes[attribute]}
+        changes[attribute] = attribute_changes
         this.emit('change', changes)
+        this.emit(`change:${attribute}`, attribute_changes)
         this.attributes[attribute] = new_value
       },
 
