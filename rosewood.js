@@ -5631,8 +5631,10 @@ var Model = (function (_EventEmitter) {
       Object.defineProperty(this, attribute, {
         set: function set(new_value) {
           changes = {};
-          changes[attribute] = { 'new': new_value, old: _this2.attributes[attribute] };
+          attribute_changes = { 'new': new_value, old: _this2.attributes[attribute] };
+          changes[attribute] = attribute_changes;
           _this2.emit('change', changes);
+          _this2.emit('change:' + attribute, attribute_changes);
           _this2.attributes[attribute] = new_value;
         },
 
@@ -5770,6 +5772,15 @@ module.exports = (function (_StateMachine) {
     key: 'hide',
     value: function hide() {
       this.element.style.display = 'none';
+    }
+  }, {
+    key: 'model',
+    get: function get() {
+      return this._model;
+    },
+    set: function set(new_model) {
+      this._model = new_model;
+      this.emit('set_model');
     }
   }]);
 

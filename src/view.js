@@ -9,6 +9,15 @@ module.exports = class View extends StateMachine {
     })
   }
 
+  get model(){
+    return this._model
+  }
+
+  set model(new_model){
+    this._model = new_model
+    this.emit('set_model')
+  }
+
   createElement(tag_name, attributes, content){
     let element = document.createElement(tag_name)
     Object.keys(attributes).forEach((attribute_name) => {

@@ -23,7 +23,7 @@ Download `rosewood.js` and include it:
 
 ```javascript
   // Using ES6 class syntax
-  Rosewood = require('rosewood')
+  Rosewood = require('rosewood') // if not using Browserify or other CommonJS system
 
   var Model = Rosewood.Model
 
@@ -34,7 +34,7 @@ Download `rosewood.js` and include it:
       this.attribute_names = ['first_name, last_name']
     }
 
-    get url: function(){
+    get url(){
       return "/people/" + this.id.toString()
     }
   }
@@ -233,30 +233,41 @@ An event emitted whenever one or more models are removed the collection. The cal
     constructor(options){
       super(options)
 
+      this.element.innerHTML = `
+        <label name="first_name"></label>
+        <label name="last_name" ></label>`
+
       this.first_name_field = this.element.querySelector('[name=first_name]')
       this.last_name_field  = this.element.querySelector('[name=last_name]' )
 
-      this.on('model:change ', function(model){
-        this.first_name_field.value = model.first_name
-        this.last_name_field.value  = model.last_name
+      view = this // event listeners change the value of `this`; this gets around that.
+                  // Alternatively, use the ES6 "=>" syntax.
+
+      this.on('set_model', function(model) {
+        view.first_name_field.textContent = model.first_name
+        view.last_name_field.textContent  = model.last_name
       })
 
-      this.first_name_field.addEventListener('change', function(){
-        this.model.first_name = this.first_name_field.value
+      this.on('model:change:first_name', function(model) {
+        view.first_name_field.textContent = model.first_name
       })
 
-      this.last_name_field.addEventListener('change', function(){
-        this.model.last_name = this.last_name_field.value
+      this.on('model:change:last_name', function(model) {
+        view.last_name_field.textContent = model.last_name
+      })
+
+      this.first_name_field.addEventListener('change', function() {
+        view.model.first_name = view.first_name_field.textContent
+      })
+
+      this.last_name_field.addEventListener('change', function() {
+        view.model.last_name  = view.last_name_field.textContent
       })
     }
   }
 
   var abbreviated_person_display = new ShortPersonView({
-    element: document.getElementById('person_short'),
-    template: `
-      <label name="first_name"></label>
-      <label name="last_name" ></label>
-    `
+    element: document.getElementById('person_short')
   })
 ```
 
@@ -264,13 +275,14 @@ An event emitted whenever one or more models are removed the collection. The cal
 
 The `HTMLElement` the View uses to represent itself on the page.
 
-#### view.template
-
-The HTML contents of the View. A plain string; will be used as `view.element.innerHTML`.
 
 #### view.model
 
 The `Rosewood.Model` instance the view represents (optional).
+
+#### view.on('set_model', function(){ ... })
+
+An event emitted whenever a view gets assigned a new model.
 
 #### view.on('model:change', function(changes){ ... })
 
