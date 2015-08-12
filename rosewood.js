@@ -5732,7 +5732,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var StateMachine = _dereq_('./state_machine.js');
 
-module.exports = (function (_StateMachine) {
+var View = (function (_StateMachine) {
   _inherits(View, _StateMachine);
 
   function View() {
@@ -5743,21 +5743,20 @@ module.exports = (function (_StateMachine) {
     _classCallCheck(this, View);
 
     _get(Object.getPrototypeOf(View.prototype), 'constructor', this).call(this);
+    this.model_changed = function () {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this.emit.apply(_this, ['model:change'].concat(args));
+    };
+
     Object.keys(options).forEach(function (key) {
       _this[key] = options[key];
     });
   }
 
   _createClass(View, [{
-    key: 'model_changed',
-    value: function model_changed() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      this.emit.apply(this, ['model:change'].concat(args));
-    }
-  }, {
     key: 'createElement',
     value: function createElement(tag_name, attributes, content) {
       var element = document.createElement(tag_name);
@@ -5797,6 +5796,8 @@ module.exports = (function (_StateMachine) {
 
   return View;
 })(StateMachine);
+
+module.exports = View;
 
 },{"./state_machine.js":7}]},{},[6])(6)
 });

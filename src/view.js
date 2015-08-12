@@ -1,9 +1,13 @@
 let StateMachine = require('./state_machine.js')
 
-module.exports = class View extends StateMachine {
+let View = class extends StateMachine {
 
   constructor(options = {}){
     super()
+    this.model_changed = (...args) => {
+      this.emit('model:change', ...args)
+    }
+
     Object.keys(options).forEach((key) => {
       this[key] = options[key]
     })
@@ -20,10 +24,6 @@ module.exports = class View extends StateMachine {
 
     this._model = new_model
     this.emit('set_model')
-  }
-
-  model_changed(...args){
-    this.emit('model:change', ...args)
   }
 
   createElement(tag_name, attributes, content){
@@ -44,3 +44,5 @@ module.exports = class View extends StateMachine {
     this.element.style.display = 'none'
   }
 }
+
+module.exports = View
