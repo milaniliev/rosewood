@@ -14,8 +14,16 @@ module.exports = class View extends StateMachine {
   }
 
   set model(new_model){
+    let old_model = this._model
+    if(old_model){ old_model.off('change', this.model_changed) }
+    new_model.on('change', this.model_changed)
+
     this._model = new_model
     this.emit('set_model')
+  }
+
+  model_changed(...args){
+    this.emit('model:change', ...args)
   }
 
   createElement(tag_name, attributes, content){

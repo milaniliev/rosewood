@@ -5611,15 +5611,15 @@ var Model = (function (_EventEmitter) {
     _classCallCheck(this, Model);
 
     _get(Object.getPrototypeOf(Model.prototype), 'constructor', this).call(this);
-    Object.keys(properties).forEach(function (key) {
-      _this[key] = properties[key];
+
+    this.constructor.attributes.forEach(function (attribute) {
+      _this.register_attribute(attribute);
     });
 
-    this.attribute_names = this.attribute_names || [];
-
     this.attributes = this.attributes || {};
-    this.attribute_names.forEach(function (attribute) {
-      _this.register_attribute(attribute);
+
+    Object.keys(properties).forEach(function (key) {
+      _this[key] = properties[key];
     });
   }
 
@@ -5629,17 +5629,18 @@ var Model = (function (_EventEmitter) {
       var _this2 = this;
 
       Object.defineProperty(this, attribute, {
-        set: function set(new_value) {
-          changes = {};
-          attribute_changes = { 'new': new_value, old: _this2.attributes[attribute] };
-          changes[attribute] = attribute_changes;
-          _this2.emit('change', changes);
-          _this2.emit('change:' + attribute, attribute_changes);
-          _this2.attributes[attribute] = new_value;
-        },
-
         get: function get() {
           return _this2.attributes[attribute];
+        },
+
+        set: function set(new_value) {
+          var old_value = _this2.attributes[attribute];
+          if (old_value !== new_value) {
+            var changes = {};
+            changes[attribute] = { 'new': new_value, old: old_value };
+            _this2.emit('change', changes);
+            _this2.attributes[attribute] = new_value;
+          }
         }
       });
     }
@@ -5662,17 +5663,12 @@ var Model = (function (_EventEmitter) {
         request.send();
       });
     }
-  }, {
-    key: 'save',
-    value: function save() {}
   }]);
 
   return Model;
 })(EventEmitter);
 
 module.exports = Model;
-
-// TODO
 
 },{"bluebird":1,"eventemitter2":3}],6:[function(_dereq_,module,exports){
 'use strict';
@@ -5753,6 +5749,15 @@ module.exports = (function (_StateMachine) {
   }
 
   _createClass(View, [{
+    key: 'model_changed',
+    value: function model_changed() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      this.emit.apply(this, ['model:change'].concat(args));
+    }
+  }, {
     key: 'createElement',
     value: function createElement(tag_name, attributes, content) {
       var element = document.createElement(tag_name);
@@ -5779,6 +5784,12 @@ module.exports = (function (_StateMachine) {
       return this._model;
     },
     set: function set(new_model) {
+      var old_model = this._model;
+      if (old_model) {
+        old_model.off('change', this.model_changed);
+      }
+      new_model.on('change', this.model_changed);
+
       this._model = new_model;
       this.emit('set_model');
     }

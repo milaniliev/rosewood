@@ -4,31 +4,32 @@ let EventEmitter = require('eventemitter2').EventEmitter2
 class Model extends EventEmitter {
   constructor(properties = {}){
     super()
-    Object.keys(properties).forEach((key) => {
-      this[key] = properties[key]
+
+    this.constructor.attributes.forEach((attribute) => {
+      this.register_attribute(attribute)
     })
 
-    this.attribute_names = this.attribute_names || []
-
     this.attributes = this.attributes || {}
-    this.attribute_names.forEach((attribute) => {
-      this.register_attribute(attribute)
+
+    Object.keys(properties).forEach((key) => {
+      this[key] = properties[key]
     })
   }
 
   register_attribute(attribute){
     Object.defineProperty(this, attribute, {
-      set: (new_value) => {
-        changes = {}
-        attribute_changes = {new: new_value, old: this.attributes[attribute]}
-        changes[attribute] = attribute_changes
-        this.emit('change', changes)
-        this.emit(`change:${attribute}`, attribute_changes)
-        this.attributes[attribute] = new_value
-      },
-
       get: () => {
         return this.attributes[attribute]
+      },
+
+      set: (new_value) => {
+        let old_value = this.attributes[attribute]
+        if(old_value !== new_value){
+          let changes = {}
+          changes[attribute] = {new: new_value, old: old_value}
+          this.emit('change', changes)
+          this.attributes[attribute] = new_value
+        }
       }
     })
   }
@@ -47,11 +48,6 @@ class Model extends EventEmitter {
       request.open('get', this.url)
       request.send()
     })
-  }
-
-
-  save(){
-    // TODO
   }
 }
 
