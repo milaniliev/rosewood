@@ -1,6 +1,6 @@
-# Rosewood
+# <img src="rosewood.png"/> Rosewood
 
-<img src="rosewood.png"/>
+
 A super-simple Model/View/Collection library for the browser.
 
 Rosewood's goal is to supply just enough code so you don't need to re-write boilerplate MVC code. Rosewood requires EcmaScript 5+, because it heavily relies on getters/setters, but has no other dependencies. (A non-ES5 alternative is [http://backbonejs.org])
