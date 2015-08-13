@@ -24,7 +24,7 @@ Download `rosewood.js` and include it:
 
 ```javascript
   // Using ES6 class syntax
-  Rosewood = require('rosewood') // if not using Browserify or other CommonJS system
+  Rosewood = require('rosewood') // if using Browserify or other CommonJS system
 
   var Model = Rosewood.Model
 

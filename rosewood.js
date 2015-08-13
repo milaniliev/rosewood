@@ -5638,8 +5638,8 @@ var Model = (function (_EventEmitter) {
           if (old_value !== new_value) {
             var changes = {};
             changes[attribute] = { 'new': new_value, old: old_value };
-            _this2.emit('change', changes);
             _this2.attributes[attribute] = new_value;
+            _this2.emit('change', changes);
           }
         }
       });

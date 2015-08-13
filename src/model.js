@@ -27,8 +27,8 @@ class Model extends EventEmitter {
         if(old_value !== new_value){
           let changes = {}
           changes[attribute] = {new: new_value, old: old_value}
-          this.emit('change', changes)
           this.attributes[attribute] = new_value
+          this.emit('change', changes)
         }
       }
     })
