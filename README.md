@@ -1,5 +1,5 @@
-# <img src="rosewood.png"/> Rosewood
-
+<img src="rosewood.png" style="display:block;" alt="rosewood"/>
+# Rosewood
 
 A super-simple Model/View/Collection library for the browser.
 
