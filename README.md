@@ -1,5 +1,6 @@
 # Rosewood
 
+<img src="rosewood.png"/>
 A super-simple Model/View/Collection library for the browser.
 
 Rosewood's goal is to supply just enough code so you don't need to re-write boilerplate MVC code. Rosewood requires EcmaScript 5+, because it heavily relies on getters/setters, but has no other dependencies. (A non-ES5 alternative is [http://backbonejs.org])
@@ -296,7 +297,6 @@ An event emitted whenever one or more models are removed the collection. The cal
 
 The `HTMLElement` the View uses to represent itself on the page.
 
-
 #### view.model
 
 The `Rosewood.Model` instance the view represents (optional).
@@ -312,3 +312,11 @@ A proxy event emitted whenever `view.model` emits a `change` event. The callback
 #### view.on('model:change:&lt;attribute&gt;', function(changes){ ... })
 
 A proxy event emitted when `view.model` emits a `change:<attribute>` event. The callback parameter is the same as `model.on('change:<attribute>')`
+
+#### view.hide()
+
+Hides `view.element` using `element.style.display = 'none'`.
+
+#### view.show()
+
+Un-hides `view.element` using `element.style.display = ''`.
