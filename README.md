@@ -61,7 +61,7 @@ Set `attribute_names` to the list of properties of the model that make up its da
 #### model.on('change')
 
 ```javascript
-model.on('change', function({<attribute>: {new: ..., old: ...}, ...} ){ ... })
+model.on('change', function({attribute1: {new: ..., old: ...}, attribute2: {new: ..., old: ...}){ ... })
 ```
 
 The `change` event fires on a model whenever any of the `attributes` is modified.
@@ -77,7 +77,11 @@ The callback gets an object that lists new and old values for each changed attri
 
 #### model.sync()
 ```javascript
-function callback(error){}) or model.sync() => Promise
+model.sync(function callback(error){})
+```
+or
+```javascript
+model.sync() => Promise
 ```
 
 Synchronizes the model with its backing API.
@@ -90,7 +94,15 @@ Calls `model.create()`, `model.update()`, based on whether the model has been pr
 
 `model.sync()`, `model.refresh()`, `model.create()`, `model.update()`, and `model.delete()` are all asynchronous, and can be either called with a callback function or will return a Promise (specifically, https://github.com/petkaantonov/bluebird).
 
-#### model.refresh(function callback(error){}) or model.refresh() => Promise
+#### model.refresh()
+
+```javascript
+model.refresh(function callback(error){})
+```
+or
+```javascript
+model.refresh() => Promise
+```
 
 Gets the latest model attributes from the model's API.
 
@@ -117,7 +129,14 @@ Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 
 Refresh will overwrite any local changes made to the model that haven't been synchronized with the API yet. If you'd rather do an intelligent sync, try `model.sync()`
 
-#### model.create(function callback(error){}) or model.create() => Promise
+#### model.create()
+```javascript
+ model.create(function callback(error){})
+```
+or
+```javascript
+model.create() => Promise
+```
 
 Sends a create request to a REST API.
 
@@ -144,7 +163,14 @@ Headers: {Content-Type: application/json}
 Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 ```
 
-#### model.update(function callback(error){}) or model.create() => Promise
+#### model.update()
+```javascript
+model.update(function callback(error){})
+```
+or
+```javascript
+model.create() => Promise
+```
 
 Sends a update request to the model's REST API.
 
@@ -165,7 +191,15 @@ Headers: {Content-Type: application/json}
 Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 ```
 
-#### model.delete(function callback(error){}) or model.delete() => Promise
+#### model.delete()
+```javascript
+model.delete(function callback(error){})
+```
+or
+```javascript
+model.delete() => Promise
+```
+
 
 Will send a remove request to the model's REST API.
 
