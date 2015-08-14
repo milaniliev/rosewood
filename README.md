@@ -319,6 +319,7 @@ An event emitted whenever one or more models are removed the collection. The cal
 ### Rosewood.View
 
 A `Rosewood.View` wraps an `HTMLElement` and ties it to a `Rosewood.Model` for presentation.
+
 A `Rosewood.View` is a `Rosewood.StateMachine`, so that views that change significantly based on certain events or data (such as an application's main view) can be easily re-configured.
 
 ```javascript

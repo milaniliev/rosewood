@@ -1,7 +1,7 @@
 {
   "name": "rosewood",
   "description": "A super-simple Model/View/Collection library for the browser",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "rosewood.js",
   "repository": "https://github.com/milaniliev/rosewood.git",
   "author": "Milan Iliev",
