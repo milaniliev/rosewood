@@ -58,7 +58,11 @@ Download `rosewood.js` and include it:
 
 Set `attribute_names` to the list of properties of the model that make up its data. These are the properties that will be synched with the model's API, and `change` events will be emitted when any of them change.
 
-#### model.on('change', function({&lt;attribute&gt;: {new: ..., old: ...}, ...} ){ ... })
+#### model.on('change')
+
+```javascript
+model.on('change', function({<attribute>: {new: ..., old: ...}, ...} ){ ... })
+```
 
 The `change` event fires on a model whenever any of the `attributes` is modified.
 The callback gets an object that lists new and old values for each changed attribute.
@@ -71,7 +75,10 @@ The callback gets an object that lists new and old values for each changed attri
   bob.first_name = "Robert" // logs "Bob", "Robert"
 ```
 
-#### model.sync(function callback(error){}) or model.sync() => Promise
+#### model.sync()
+```javascript
+function callback(error){}) or model.sync() => Promise
+```
 
 Synchronizes the model with its backing API.
 
@@ -81,7 +88,7 @@ Synchronizes the model with its backing API.
 
 Calls `model.create()`, `model.update()`, based on whether the model has been previously synced with (or retrieved from) its backing API, or `model.refresh()` if the model hasn't been changed since the last sync.
 
-`model.sync()`, `model.refresh()`, `model.create()`, `model.update()`, and `model.delete()` are all asynchronous,
+`model.sync()`, `model.refresh()`, `model.create()`, `model.update()`, and `model.delete()` are all asynchronous, and can be either called with a callback function or will return a Promise (specifically, https://github.com/petkaantonov/bluebird).
 
 #### model.refresh(function callback(error){}) or model.refresh() => Promise
 
