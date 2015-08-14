@@ -71,7 +71,7 @@ class PersonForm extends Rosewood.View {
 var bob = new Person({first_name: "Bob", last_name: "Robson"})
 
 var abbreviated_person_display = new PersonForm({
-  element: document.getElementById('person_short')
+  element: document.getElementById('person_form')
 })
 
 abbreviated_person_display.model = bob

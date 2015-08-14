@@ -104,7 +104,6 @@ Gets the latest model attributes from the model's API.
 
 ```javascript
 var bob = new Person({id: 1})
-
 bob.refresh()
 ```
 
@@ -136,7 +135,6 @@ Sends a create request to a REST API.
 
 ```javascript
 var bob = new Person({first_name: "Bob", last_name: "Robson"})
-
 bob.create()
 ```
 
@@ -265,7 +263,7 @@ collection.store(function(error){})
 collection.store() => Promise
 ```
 
-Will make one HTTP request per model that has been modified. (It essentially calls model.sync() on each model.)
+Will make one HTTP request per model that has been modified. (It essentially calls `model.sync()` on each model.)
 
 ```javascript
   people.add(new Person({first_name: "Mike", las_name: "Mitchell"}))
@@ -287,7 +285,7 @@ DELETE /people/1
 collection.sync(function(error){}) or collection.sync() => Promise
 ```
 
-Effectively a combination of collection.store() and collection.fetch(). It will sync all existing models and fetch any new ones.
+Effectively a combination of `collection.store()` and `collection.fetch()`. It will sync all existing models and fetch any new ones.
 
 #### collection.on('change')
 ```javascript
@@ -320,6 +318,9 @@ An event emitted whenever one or more models are removed the collection. The cal
 
 ### Rosewood.View
 
+A `Rosewood.View` wraps an `HTMLElement` and ties it to a `Rosewood.Model` for presentation.
+A `Rosewood.View` is a `Rosewood.StateMachine`, so that views that change significantly based on certain events or data (such as an application's main view) can be easily re-configured.
+
 ```javascript
   Rosewood = require('rosewood')
 
@@ -350,22 +351,21 @@ An event emitted whenever one or more models are removed the collection. The cal
         view.last_name_field.value  = view.model.last_name
       })
 
-      // If the model's first_name attribute is changed, update the corresponding field
-      this.on('model:change:first_name', function(changes) {
-        view.first_name_field.value = model.first_name
-      })
-
-      // Advanced logic: only update the field if the model has changed and the user hasn't entered anything.
-      this.on('model:change:last_name', function(changes) {
-        if(changes.old === view.last_name_field.value){view.first_name_field.value = view.model.last_name}
-      })
-
-      // Whenever the first or last name are changed, update the full_name_label
       this.on('model:change', function(changes) {
+
+        // Whenever the first or last name are changed, update the full_name_label
         if(changes.first_name || changes.last_name){ view.full_name_label.textContent = view.model.full_name() }
+
+        // If the model's first_name attribute is changed, update the corresponding field
+        if(changes.first_name){ view.first_name_field.value = view.model.first_name }
+
+        // Advanced logic: only update the field if the model has changed and the user hasn't entered anything.
+        if(changes.last_name){
+          if(changes.last_name.old === view.last_name_field.value){ view.first_name_field.value = view.model.last_name }
+        }
       })
 
-      // If the first or last_name fields have had anything typed into them,
+      // If the first or last_name fields have their contents changed,
       // update the corresponding model attribute
       this.first_name_field.addEventListener('change', function() {
         view.model.first_name = view.first_name_field.value
@@ -378,7 +378,7 @@ An event emitted whenever one or more models are removed the collection. The cal
   }
 
   var abbreviated_person_display = new PersonForm({
-    element: document.getElementById('person_short')
+    element: document.getElementById('person_form')
   })
 ```
 
@@ -403,7 +403,7 @@ An event emitted whenever a view gets assigned a new model.
 view.on('model:change', function(changes){ ... })
 ```
 
-A proxy event emitted whenever `view.model` emits a `change` event. The callback parameter is the same as `model.on('change')`
+A proxy event emitted whenever `view.model` emits a `change` event. The callback parameter is the same as `model.on('change')`.
 
 
 #### view.hide()
@@ -413,3 +413,43 @@ Hides `view.element` using `element.style.display = 'none'`.
 #### view.show()
 
 Un-hides `view.element` using `element.style.display = ''`.
+
+### Rosewood.StateMachine
+
+A super-simple state machine that keeps a `state_machine.state` and emits `enter_state` and `exit_state` events whenever it is changed.
+
+#### state_machine.state
+
+The current state the state machine is in. There are no restrictions on state changes; to change the current state, simply re-assign `state_machine.state = "new_state_name"`.
+
+#### state_machine.on('enter_state')
+
+```javascript
+state_machine.on('enter_state', function(new_state, old_state){ ... })
+```
+
+An event emitted after the event machine enters a new state. The callback function is passed the name of the new and old states.
+
+#### state_machine.on('exit_state')
+
+```javascript
+state_machine.on('exit_state', function(old_state, new_state){ ... })
+```
+
+An event emitted before the state machine enters a new state. The callback function is passed the name of the previous and new states.
+
+#### state_machine.on('enter_state:{state}')
+
+```javascript
+state_machine.on('enter_state:${state_name}', function(old_state){ ... })
+```
+
+A convenience event emitted after the machine enters a specific state.
+
+#### state_machine.on('exit_state:{state}')
+
+```javascript
+state_machine.on('exit_state:${state_name}', function(new_state){ ... })
+```
+
+A convenience event emitted before the machine exits a specific state.
