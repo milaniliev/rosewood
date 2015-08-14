@@ -1,7 +1,14 @@
-<img src="rosewood.png" style="display:block;" alt="rosewood"/>
 # Rosewood
 
+<img src="rosewood.png" style="display:block;" alt="rosewood"/>
+
 A super-simple Model/View/Collection library for the browser.
+
+* <a href="#install">Install</a>
+* <a href="#usage">Usage</a>
+  * <a href="#rosewoodmodel">Rosewood.Model</a>
+  * <a href="#rosewoodcollection">Rosewood.Collection</a>
+  * <a href="#rosewoodview">Rosewood.View</a>
 
 Rosewood's goal is to supply just enough code so you don't need to re-write boilerplate MVC code. Rosewood requires EcmaScript 5+, because it heavily relies on getters/setters, but has no other dependencies. (A non-ES5 alternative is [http://backbonejs.org])
 
@@ -49,7 +56,7 @@ Download `rosewood.js` and include it:
 
 #### model.attribute_names
 
-Set `attribute_names` to the list of properties of the model that make up its data.
+Set `attribute_names` to the list of properties of the model that make up its data. These are the properties that will be synched with the model's API, and `change` events will be emitted when any of them change.
 
 #### model.on('change', function({&lt;attribute&gt;: {new: ..., old: ...}, ...} ){ ... })
 
@@ -64,20 +71,46 @@ The callback gets an object that lists new and old values for each changed attri
   bob.first_name = "Robert" // logs "Bob", "Robert"
 ```
 
-#### model.on('change:&lt;attribute&gt;', function({new: ..., old: ... }){ ... })
+#### model.sync(function callback(error){}) or model.sync() => Promise
 
-The `change:<attribute_name>` event fires on a model whenever `<attribute>` is modified.
-The callback is passed an object with the new and old value of `<attribute>`.
+Synchronizes the model with its backing API.
+
+* If the model has never been synched with its API since creation, will call `model.create()`
+* If the model has been synched but has been changed since, it will call `model.update()`
+* If the model has been synched and has not been changed since, it will call `model.refresh()`
+
+Calls `model.create()`, `model.update()`, based on whether the model has been previously synced with (or retrieved from) its backing API, or `model.refresh()` if the model hasn't been changed since the last sync.
+
+`model.sync()`, `model.refresh()`, `model.create()`, `model.update()`, and `model.delete()` are all asynchronous,
+
+#### model.refresh(function callback(error){}) or model.refresh() => Promise
+
+Gets the latest model attributes from the model's API.
 
 ```javascript
-  bob.on('change:first_name', function(changes){
-    console.log(changes.old, changes.new)
-  })
+var bob = new Person({id: 1})
 
-  bob.first_name = "Robert" // logs "Bob", "Robert"
+bob.refresh()
 ```
 
-#### model.create()
+This will send an HTTP request like:
+
+```
+Method: GET
+URL: /people/1
+```
+
+It expects a response like:
+
+```
+Status:  200 OK
+Headers: {Content-Type: application/json}
+Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
+```
+
+Refresh will overwrite any local changes made to the model that haven't been synchronized with the API yet. If you'd rather do an intelligent sync, try `model.sync()`
+
+#### model.create(function callback(error){}) or model.create() => Promise
 
 Sends a create request to a REST API.
 
@@ -104,7 +137,7 @@ Headers: {Content-Type: application/json}
 Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 ```
 
-#### model.update()
+#### model.update(function callback(error){}) or model.create() => Promise
 
 Sends a update request to the model's REST API.
 
@@ -125,7 +158,7 @@ Headers: {Content-Type: application/json}
 Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 ```
 
-#### model.delete()
+#### model.delete(function callback(error){}) or model.delete() => Promise
 
 Will send a remove request to the model's REST API.
 
@@ -151,13 +184,13 @@ The Collection class represents a group of models. It could be every model of a 
   var people = new Rosewood.Collection({url: '/people', model: Person})
 ```
 
-#### collection.fetch()
+#### collection.refresh(function callback(error){}) or collection.refresh() => Promise
 
 Gets new collection models from a REST API.
 
 
 ```javascript
-  people.fetch()
+  people.refresh()
 ```
 
 This will send an HTTP request like:
@@ -176,9 +209,9 @@ Headers: {Content-Type: application/json}
 Body:    [{"id": 1, "first_name": "Bob", "last_name": "Robson"}, {"id": 2, "first_name": "John", "last_name": "Jackson"}]
 ```
 
-After, `collection.models` will contain instances of `collection.model` that match the received data.
+After, `collection.models` will contain instances of `collection.model` that match the received data. It will merge any existing models (based on id) and
 
-#### collection.get(id)
+#### collection.get(id) => Model
 
 Returns the model with id `id`, or `null` if none is found.
 
@@ -186,7 +219,7 @@ Returns the model with id `id`, or `null` if none is found.
   people.get(1) // returns the Person instance with id 1
 ```
 
-#### collection.store()
+#### collection.store(function(error){}) or collection.store() => Promise
 
 Will make one HTTP request per model that has been modified. (It essentially calls model.sync() on each model.)
 
@@ -205,7 +238,7 @@ PATCH  /people/1 {"last_name": "Roberts"}
 DELETE /people/1
 ```
 
-#### collection.sync()
+#### collection.sync(function(error){}) or collection.sync() => Promise
 
 Effectively a combination of collection.store() and collection.fetch(). It will sync all existing models and fetch any new ones.
 
