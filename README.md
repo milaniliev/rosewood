@@ -215,7 +215,12 @@ The Collection class represents a group of models. It could be every model of a 
   var people = new Rosewood.Collection({url: '/people', model: Person})
 ```
 
-#### collection.refresh(function callback(error){}) or collection.refresh() => Promise
+#### collection.refresh()
+```javascript
+collection.refresh(function callback(error){})
+// or
+collection.refresh() => Promise
+```
 
 Gets new collection models from a REST API.
 
@@ -242,7 +247,10 @@ Body:    [{"id": 1, "first_name": "Bob", "last_name": "Robson"}, {"id": 2, "firs
 
 After, `collection.models` will contain instances of `collection.model` that match the received data. It will merge any existing models (based on id) and
 
-#### collection.get(id) => Model
+#### collection.get(id)
+```javascript
+collection.get(id) => Model
+```
 
 Returns the model with id `id`, or `null` if none is found.
 
@@ -250,7 +258,12 @@ Returns the model with id `id`, or `null` if none is found.
   people.get(1) // returns the Person instance with id 1
 ```
 
-#### collection.store(function(error){}) or collection.store() => Promise
+#### collection.store()
+```javascript
+collection.store(function(error){})
+// or
+collection.store() => Promise
+```
 
 Will make one HTTP request per model that has been modified. (It essentially calls model.sync() on each model.)
 
@@ -269,11 +282,17 @@ PATCH  /people/1 {"last_name": "Roberts"}
 DELETE /people/1
 ```
 
-#### collection.sync(function(error){}) or collection.sync() => Promise
+#### collection.sync()
+```javascript
+collection.sync(function(error){}) or collection.sync() => Promise
+```
 
 Effectively a combination of collection.store() and collection.fetch(). It will sync all existing models and fetch any new ones.
 
-#### collection.on('change', function({changed: [...], added: [...], removed: [...]}){ ... })
+#### collection.on('change')
+```javascript
+collection.on('change', function({changed: [...], added: [...], removed: [...]}){ ... })
+```
 
 An event that's emitted any time a model in the collection changes, a model is added, or a model is removed. The callback function is passed an object containing three keys: `{added: [...], changed: [...], removed: [...]}`, which contain the models that have changed in those ways.
 
@@ -281,7 +300,10 @@ An event that's emitted any time a model in the collection changes, a model is a
 
 Add a model to the collection. The collection will emit an `add` event.
 
-#### collection.on('add', function(added_models){ ... })
+#### collection.on('add')
+```javascript
+collection.on('add', function(added_models){ ... })
+```
 
 An event emitted whenever one or more models are added to the collection. The callback function is passed an array of added models.
 
@@ -289,7 +311,10 @@ An event emitted whenever one or more models are added to the collection. The ca
 
 Remove a model from the collection. The collection will emit a `remove` event. Calling `collection.sync()` will send a `DELETE` HTTP request to `collection.url` (by calling `model.delete()`).
 
-#### collection.on('remove', function(removed_models){ ... })
+#### collection.on('remove')
+```javascript
+ collection.on('remove', function(removed_models){ ... })
+```
 
 An event emitted whenever one or more models are removed the collection. The callback function is passed an array of added models.
 
@@ -365,17 +390,21 @@ The `HTMLElement` the View uses to represent itself on the page.
 
 The `Rosewood.Model` instance the view represents (optional).
 
-#### view.on('set_model', function(){ ... })
+#### view.on('set_model')
+```javascript
+view.on('set_model', function(){ ... })
+```
 
 An event emitted whenever a view gets assigned a new model.
 
-#### view.on('model:change', function(changes){ ... })
+#### view.on('model:change')
+
+```javascript
+view.on('model:change', function(changes){ ... })
+```
 
 A proxy event emitted whenever `view.model` emits a `change` event. The callback parameter is the same as `model.on('change')`
 
-#### view.on('model:change:&lt;attribute&gt;', function(changes){ ... })
-
-A proxy event emitted when `view.model` emits a `change:<attribute>` event. The callback parameter is the same as `model.on('change:<attribute>')`
 
 #### view.hide()
 
