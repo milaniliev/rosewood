@@ -78,9 +78,7 @@ The callback gets an object that lists new and old values for each changed attri
 #### model.sync()
 ```javascript
 model.sync(function callback(error){})
-```
-or
-```javascript
+// or
 model.sync() => Promise
 ```
 
@@ -98,9 +96,7 @@ Calls `model.create()`, `model.update()`, based on whether the model has been pr
 
 ```javascript
 model.refresh(function callback(error){})
-```
-or
-```javascript
+// or
 model.refresh() => Promise
 ```
 
@@ -132,9 +128,7 @@ Refresh will overwrite any local changes made to the model that haven't been syn
 #### model.create()
 ```javascript
  model.create(function callback(error){})
-```
-or
-```javascript
+// or
 model.create() => Promise
 ```
 
@@ -166,9 +160,7 @@ Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 #### model.update()
 ```javascript
 model.update(function callback(error){})
-```
-or
-```javascript
+// or
 model.create() => Promise
 ```
 
@@ -194,9 +186,7 @@ Body:    {"id": 1, "first_name": "Bob", "last_name": "Robson"}
 #### model.delete()
 ```javascript
 model.delete(function callback(error){})
-```
-or
-```javascript
+// or
 model.delete() => Promise
 ```
 
