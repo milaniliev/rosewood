@@ -1,5 +1,7 @@
-var app = require('express')()
-
+var express = require('express')
+var app = express()
+app.use(express.static(__dirname + '/', {index: "index.html"}))
+app.use(express.static(__dirname + '/..')) // to serve rosewood.js
 
 app.get('/people/1', function(request, response){
   response.json({
@@ -29,4 +31,6 @@ app.delete('/people/1', function(request, response){
   response.status(200).end()
 })
 
-app.listen(1024)
+app.listen(1024, function(){
+  console.log("Test server listening on http://localhost:1024")
+})
