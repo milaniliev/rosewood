@@ -1,5 +1,6 @@
 let Promise = require('bluebird')
 let EventEmitter = require('eventemitter2').EventEmitter2
+let Sync = require('./sync.js')
 
 class Model extends EventEmitter {
   constructor(properties = {}){
@@ -34,21 +35,24 @@ class Model extends EventEmitter {
     })
   }
 
-  fetch(filters) {
-    return new Promise(function(resolve, reject){
-      let request = new XMLHttpRequest()
-      request.addEventListener('load', () => {
-        let model_data = JSON.parse(request.responseText)
-        let model = new this(model_data)
-        resolve(model)
+  refresh(callback) {
+    Sync.request(this.url).then((data) => {
+      Object.keys(data).forEach((data_key) => {
+        this[data_key] = data[data_key]
       })
-      request.addEventListener('error', (error) => {
-        reject(error)
-      })
-      request.open('get', this.url)
-      request.send()
+
+      if(callback){
+        callback()
+      }
+    }).catch((error) => {
+      if(callback){
+        callback(error)
+      } else {
+        throw error
+      }
     })
   }
+
 }
 
 module.exports = Model

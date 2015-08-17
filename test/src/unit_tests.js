@@ -1,7 +1,11 @@
 var test_suite = new rosehip.TestSuite()
 test_suite.reporter = new rosehip.WebReporter(document.getElementById('test_results'))
 
-let Person = class extends Rosewood.Model { }
+let Person = class extends Rosewood.Model {
+  get url(){
+    return `http://localhost:1024/people/${this.id}`
+  }
+}
 
 Person.attributes = ['first_name', 'last_name']
 
@@ -24,6 +28,13 @@ test_suite.describe("Rosewood", function(test){
       expect(test_dummy.attributes.first_name).to.be("Bob")
       test_dummy.first_name = "Roberts"
       expect(test_dummy.attributes.first_name).to.be("Roberts")
+    })
+
+    test.it("syncs with API", function(){
+      let test_dummy = new Person({id: 1})
+      test_dummy.refresh().then(() => {
+        expect(test_dummy.first_name).to.equal("Jack")
+      }).done()
     })
   })
 

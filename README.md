@@ -9,15 +9,22 @@ A super-simple Model/View/Collection library for the browser.
   * <a href="#rosewoodmodel">Rosewood.Model</a>
   * <a href="#rosewoodcollection">Rosewood.Collection</a>
   * <a href="#rosewoodview">Rosewood.View</a>
+  * <a href="#rosewoodstatemachine">Rosewood.StateMachine</a>
 
 Rosewood's goal is to supply just enough code so you don't need to re-write boilerplate MVC code. Rosewood requires EcmaScript 5+, because it heavily relies on getters/setters, but has no other dependencies. (A non-ES5 alternative is [http://backbonejs.org])
 
 ## Install
-### Browserify / other NPM-based:
+#### Browserify / NPM:
 
 `npm install --save rosewood`
 
-### Browser standalone:
+In your script:
+
+```javascript
+  Rosewood = require('rosewood')
+```
+
+#### Browser standalone:
 
 Download `rosewood.js` and include it:
 
@@ -31,12 +38,7 @@ Download `rosewood.js` and include it:
 
 ```javascript
   // Using ES6 class syntax
-  Rosewood = require('rosewood') // if using Browserify or other CommonJS system
-
-  var Model = Rosewood.Model
-
-  class Person extends Model {
-
+  class Person extends Rosewood.Model {
     constructor(attributes){
       super(attributes)
       this.attribute_names = ['first_name, last_name']
@@ -57,6 +59,17 @@ Download `rosewood.js` and include it:
 #### model.attribute_names
 
 Set `attribute_names` to the list of properties of the model that make up its data. These are the properties that will be synched with the model's API, and `change` events will be emitted when any of them change.
+
+
+#### model.id
+
+`model.id` is a special property used by `Rosewood.Collection` to determine whether a model is the same as another.
+
+For example, if a collection contains `[{id: 1, first_name: "Bob"}]`, running
+```javascript
+  collection.update([{id: 1, first_name: "Steve"}, {id: 2, first_name: "Bob"}])
+```
+will result in the collection containing `[{id: 1, first_name: "Steve"}, {id:2, first_name: "Bob"}]`
 
 #### model.on('change')
 
@@ -320,7 +333,7 @@ An event emitted whenever one or more models are removed the collection. The cal
 
 A `Rosewood.View` wraps an `HTMLElement` and ties it to a `Rosewood.Model` for presentation.
 
-A `Rosewood.View` is a `Rosewood.StateMachine`, so that views that change significantly based on certain events or data (such as an application's main view) can be easily re-configured.
+A `Rosewood.View` is a `Rosewood.StateMachine`, to allow views that change significantly based on certain events or data (such as an application's main view) to be easily re-configured.
 
 ```javascript
   Rosewood = require('rosewood')
@@ -442,7 +455,7 @@ An event emitted before the state machine enters a new state. The callback funct
 #### state_machine.on('enter_state:{state}')
 
 ```javascript
-state_machine.on('enter_state:${state_name}', function(old_state){ ... })
+state_machine.on('enter_state:{state_name}', function(old_state){ ... })
 ```
 
 A convenience event emitted after the machine enters a specific state.
@@ -450,7 +463,31 @@ A convenience event emitted after the machine enters a specific state.
 #### state_machine.on('exit_state:{state}')
 
 ```javascript
-state_machine.on('exit_state:${state_name}', function(new_state){ ... })
+state_machine.on('exit_state:{state_name}', function(new_state){ ... })
 ```
 
 A convenience event emitted before the machine exits a specific state.
+
+
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Milan Iliev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -100,13 +100,15 @@ var PersonForm = (function (_Rosewood$View) {
 var bob = new Person({ first_name: "Bob", last_name: "Robson" });
 
 var abbreviated_person_display = new PersonForm({
-  element: document.getElementById("person_short")
+  element: document.getElementById("person_form")
 });
 
 abbreviated_person_display.model = bob;
 
 },{}],2:[function(require,module,exports){
 'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
@@ -125,6 +127,13 @@ var Person = (function (_Rosewood$Model) {
 
     _get(Object.getPrototypeOf(Person.prototype), 'constructor', this).apply(this, arguments);
   }
+
+  _createClass(Person, [{
+    key: 'url',
+    get: function get() {
+      return 'http://localhost:1024/people/' + this.id;
+    }
+  }]);
 
   return Person;
 })(Rosewood.Model);
@@ -150,6 +159,13 @@ test_suite.describe('Rosewood', function (test) {
       expect(test_dummy.attributes.first_name).to.be('Bob');
       test_dummy.first_name = 'Roberts';
       expect(test_dummy.attributes.first_name).to.be('Roberts');
+    });
+
+    test.it('syncs with API', function () {
+      var test_dummy = new Person({ id: 1 });
+      test_dummy.refresh().then(function () {
+        expect(test_dummy.first_name).to.equal('Jack');
+      }).done();
     });
   });
 

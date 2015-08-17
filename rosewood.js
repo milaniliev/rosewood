@@ -5599,6 +5599,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var Promise = _dereq_('bluebird');
 var EventEmitter = _dereq_('eventemitter2').EventEmitter2;
+var Sync = _dereq_('./sync.js');
 
 var Model = (function (_EventEmitter) {
   _inherits(Model, _EventEmitter);
@@ -5645,22 +5646,24 @@ var Model = (function (_EventEmitter) {
       });
     }
   }, {
-    key: 'fetch',
-    value: function fetch(filters) {
-      return new Promise(function (resolve, reject) {
-        var _this3 = this;
+    key: 'refresh',
+    value: function refresh(callback) {
+      var _this3 = this;
 
-        var request = new XMLHttpRequest();
-        request.addEventListener('load', function () {
-          var model_data = JSON.parse(request.responseText);
-          var model = new _this3(model_data);
-          resolve(model);
+      Sync.request(this.url).then(function (data) {
+        Object.keys(data).forEach(function (data_key) {
+          _this3[data_key] = data[data_key];
         });
-        request.addEventListener('error', function (error) {
-          reject(error);
-        });
-        request.open('get', this.url);
-        request.send();
+
+        if (callback) {
+          callback();
+        }
+      })['catch'](function (error) {
+        if (callback) {
+          callback(error);
+        } else {
+          throw error;
+        }
       });
     }
   }]);
@@ -5670,7 +5673,7 @@ var Model = (function (_EventEmitter) {
 
 module.exports = Model;
 
-},{"bluebird":1,"eventemitter2":3}],6:[function(_dereq_,module,exports){
+},{"./sync.js":8,"bluebird":1,"eventemitter2":3}],6:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -5680,7 +5683,7 @@ module.exports = {
   StateMachine: _dereq_('./state_machine.js')
 };
 
-},{"./collection.js":4,"./model.js":5,"./state_machine.js":7,"./view.js":8}],7:[function(_dereq_,module,exports){
+},{"./collection.js":4,"./model.js":5,"./state_machine.js":7,"./view.js":9}],7:[function(_dereq_,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5708,11 +5711,12 @@ module.exports = (function (_EventEmitter) {
       return this._current_state;
     },
     set: function set(new_state) {
-      this.emit('exit_state', this._current_state);
-      this.emit('exit_state:' + this._current_state);
+      var old_state = this._current_state;
+      this.emit('exit_state', old_state, new_state);
+      this.emit('exit_state:' + old_state, new_state);
       this._current_state = new_state;
-      this.emit('enter_state', this._current_state);
-      this.emit('enter_state:' + this._current_state);
+      this.emit('enter_state', new_state, old_state);
+      this.emit('enter_state:' + new_state, old_state);
     }
   }]);
 
@@ -5720,6 +5724,37 @@ module.exports = (function (_EventEmitter) {
 })(EventEmitter);
 
 },{"eventemitter2":3}],8:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = {
+  request: function request(url) {
+    var request_data = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+    return new Promise(function (resolve, reject) {
+      var http_request = new XMLHttpRequest();
+      http_request.addEventListener('load', function () {
+        if (http_request.status == 200) {
+          var data = JSON.parse(http_request.responseText);
+          resolve(data);
+        } else {
+          reject('Request returned ' + http_request.status);
+        }
+      });
+      http_request.addEventListener('error', function (error) {
+        reject(error);
+      });
+      http_request.open('get', url);
+      if (request_data) {
+        http_request.setRequestHeader('Content-Type', 'application/json');
+        http_request.send(JSON.stringify(request_data));
+      } else {
+        http_request.send();
+      }
+    });
+  }
+};
+
+},{}],9:[function(_dereq_,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
