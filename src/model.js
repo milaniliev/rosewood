@@ -36,7 +36,7 @@ class Model extends EventEmitter {
   }
 
   refresh(callback) {
-    Sync.request(this.url).then((data) => {
+    return Sync.request(this.url).then((data) => {
       Object.keys(data).forEach((data_key) => {
         this[data_key] = data[data_key]
       })
@@ -52,6 +52,25 @@ class Model extends EventEmitter {
       }
     })
   }
+
+  update(callback) {
+    return Sync.request(this.url, this.attributes).then((data) => {
+      Object.keys(data).forEach((data_key) => {
+        this[data_key] = data[data_key]
+      })
+
+      if(callback){
+        callback()
+      }
+    }).catch((error) => {
+      if(callback){
+        callback(error)
+      } else {
+        throw error
+      }
+    })
+  }
+
 
 }
 

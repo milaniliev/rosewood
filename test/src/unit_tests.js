@@ -30,11 +30,20 @@ test_suite.describe("Rosewood", function(test){
       expect(test_dummy.attributes.first_name).to.be("Roberts")
     })
 
-    test.it("syncs with API", function(){
-      let test_dummy = new Person({id: 1})
-      test_dummy.refresh().then(() => {
-        expect(test_dummy.first_name).to.equal("Jack")
-      }).done()
+    let test_dummy = new Person({id: 1})
+    test_dummy.refresh().then(() => {
+      test.it("refreshes from API", function(){
+        expect(test_dummy.first_name).to.equal("Bob")
+      })
+    })
+
+    let update_dummy = new Person({id: 1})
+
+    update_dummy.first_name = "Jack"
+    update_dummy.update().then(function(){
+      test.it("updates to API and reads back response", function(){
+        expect(update_dummy.first_name).to.equal("Bob")
+      })
     })
   })
 
