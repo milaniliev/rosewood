@@ -1,5 +1,5 @@
 module.exports = {
-  request: function(url, request_data = null){
+  request: function(method, url, request_data = null){
     return new Promise(function(resolve, reject){
       let http_request = new XMLHttpRequest()
       http_request.addEventListener('load', () => {
@@ -13,7 +13,7 @@ module.exports = {
       http_request.addEventListener('error', (error) => {
         reject(error)
       })
-      http_request.open('get', url)
+      http_request.open(method, url)
       if (request_data) {
         http_request.setRequestHeader("Content-Type", "application/json")
         http_request.send(JSON.stringify(request_data))

@@ -3,7 +3,10 @@ test_suite.reporter = new rosehip.WebReporter(document.getElementById('test_resu
 
 let Person = class extends Rosewood.Model {
   get url(){
-    return `http://localhost:1024/people/${this.id}`
+    return `${this.collection_url}/${this.id}`
+  }
+  get collection_url(){
+    return `http://localhost:1024/people`
   }
 }
 

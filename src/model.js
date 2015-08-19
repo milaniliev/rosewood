@@ -36,7 +36,7 @@ class Model extends EventEmitter {
   }
 
   refresh(callback) {
-    return Sync.request(this.url).then((data) => {
+    return Sync.request('GET', this.url).then((data) => {
       Object.keys(data).forEach((data_key) => {
         this[data_key] = data[data_key]
       })
@@ -52,9 +52,28 @@ class Model extends EventEmitter {
       }
     })
   }
+
+  create(callback) {
+    return Sync.request('POST', this.collection_url, this.attributes).then((data) => {
+      Object.keys(data).forEach((data_key) => {
+        this[data_key] = data[data_key]
+      })
+
+      if(callback){
+        callback()
+      }
+    }).catch((error) => {
+      if(callback){
+        callback(error)
+      } else {
+        throw error
+      }
+    })
+  }
+
 
   update(callback) {
-    return Sync.request(this.url, this.attributes).then((data) => {
+    return Sync.request('PATCH', this.url, this.attributes).then((data) => {
       Object.keys(data).forEach((data_key) => {
         this[data_key] = data[data_key]
       })
@@ -70,6 +89,22 @@ class Model extends EventEmitter {
       }
     })
   }
+
+  delete(callback) {
+    return Sync.request('DELETE', this.url, this.attributes).then(() => {
+
+      if(callback){
+        callback()
+      }
+    }).catch((error) => {
+      if(callback){
+        callback(error)
+      } else {
+        throw error
+      }
+    })
+  }
+
 
 
 }

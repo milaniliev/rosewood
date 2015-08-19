@@ -71,6 +71,35 @@ For example, if a collection contains `[{id: 1, first_name: "Bob"}]`, running
 ```
 will result in the collection containing `[{id: 1, first_name: "Steve"}, {id:2, first_name: "Bob"}]`
 
+
+#### model.url
+
+A special property of the model that determines the URL for the individual model (e.g. `/people/1`). This is usually dynamic, like so:
+
+```javascript
+class User extends Model {
+  get url(){
+    return "/people/" + this.id
+  }
+}
+```
+
+#### model.collection_url
+
+A special property of the model that determines the URL for the collection of this model type (e.g. `/people`). It's used when creating a new model (see `model.create()`):
+
+```javascript
+class User extends Model {
+  get url(){
+    return this.collection_url + this.id
+  }
+
+  get collection_url {
+    return "/people"
+  }
+}
+```
+
 #### model.on('change')
 
 ```javascript
